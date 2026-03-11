@@ -77,21 +77,27 @@ def getRequirementId(Element element) {
     return id
 }
 
-def getVerificationMethod(Element element) {
+def getVerificationMethods(Element element, String reqId) {
     // INCOSE ADIT: Analysis, Demonstration, Inspection, Test
+    // Reads the existing tagged values and wraps them in the array format.
     def method = getTaggedValue(element, "Requirement", "VerificationMethod")
     if (method == null) {
         method = getTaggedValue(element, "VerifyRequirement", "method")
     }
-    return method ?: "Test" // Default to Test if not specified
-}
+    method = method ?: "Test" // Default to Test if not specified
 
-def getVerificationCriteria(Element element) {
     def criteria = getTaggedValue(element, "Requirement", "VerificationCriteria")
     if (criteria == null) {
         criteria = getTaggedValue(element, "Requirement", "verificationCriteria")
     }
-    return criteria ?: ""
+    criteria = criteria ?: ""
+
+    def vms = [[
+        verificationMethodId: "${reqId}-VM-${String.format('%02d', 1)}",
+        method              : method,
+        criteria            : criteria,
+    ]]
+    return vms
 }
 
 def getPriority(Element element) {
@@ -152,8 +158,7 @@ def collectRequirements(Element rootElement, List results) {
             priority           : getPriority(rootElement),
             status             : getTaggedValue(rootElement, "Requirement", "Status") ?: "Draft",
             parentRequirementId: getParentRequirementId(rootElement),
-            verificationMethod : getVerificationMethod(rootElement),
-            verificationCriteria: getVerificationCriteria(rootElement),
+            verificationMethods: getVerificationMethods(rootElement, getRequirementId(rootElement)),
             satisfiedBy        : getSatisfiedBy(rootElement),
             tracesTo           : getTracesTo(rootElement),
         ]

@@ -38,8 +38,7 @@
           "cameoUUID",
           "title",
           "description",
-          "verificationMethod",
-          "verificationCriteria"
+          "verificationMethods"
         ],
         "properties": {
           "requirementId": {
@@ -72,14 +71,29 @@
             "type": ["string", "null"],
             "description": "Human-readable ID of the parent requirement for hierarchy tracking"
           },
-          "verificationMethod": {
-            "type": "string",
-            "enum": ["Analysis", "Demonstration", "Inspection", "Test"],
-            "description": "INCOSE verification method (ADIT)"
-          },
-          "verificationCriteria": {
-            "type": "string",
-            "description": "Text describing the specific criteria for verifying this requirement"
+          "verificationMethods": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["verificationMethodId", "method", "criteria"],
+              "properties": {
+                "verificationMethodId": {
+                  "type": "string",
+                  "pattern": "^[A-Z]+-[A-Z]+-\\d{3,}-VM-\\d{2,}$",
+                  "description": "Scoped VM identifier, e.g. SYS-REQ-001-VM-01"
+                },
+                "method": {
+                  "type": "string",
+                  "enum": ["Analysis", "Demonstration", "Inspection", "Test"],
+                  "description": "INCOSE verification method (ADIT)"
+                },
+                "criteria": {
+                  "type": "string",
+                  "description": "Text describing the specific criteria for this verification method"
+                }
+              }
+            }
           },
           "satisfiedBy": {
             "type": "array",
