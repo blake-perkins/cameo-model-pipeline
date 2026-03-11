@@ -164,7 +164,7 @@ Systems engineers use Groovy macros inside Cameo Systems Modeler to export model
 
 ### Model Conventions
 
-- **Requirements**: Must use the SysML `<<Requirement>>` stereotype with `Id`, `VerificationMethod` (ADIT: Analysis, Demonstration, Inspection, Test), and `VerificationCriteria` tagged values.
+- **Requirements**: Must use the SysML `<<Requirement>>` stereotype with `Id` tagged value. Each requirement must have one or more verification methods, each with a scoped ID (e.g., `SYS-REQ-001-VM-01`), a method (ADIT: Analysis, Demonstration, Inspection, Test), and criteria text.
 - **Interfaces**: Must use the `<<InterfaceBlock>>` stereotype. Messages are modeled as owned Classes or Signals; fields as Properties; enumerations as UML Enumerations.
 
 See [`cameo-macro/README.md`](cameo-macro/README.md) for full installation and troubleshooting instructions.
@@ -196,16 +196,24 @@ Top-level required fields: `exportMetadata`, `requirements`
 | `cameoUUID` | string | Cameo internal UUID for model traceability |
 | `title` | string | Short requirement title |
 | `description` | string | Full requirement text |
-| `verificationMethod` | enum | One of: `Analysis`, `Demonstration`, `Inspection`, `Test` |
-| `verificationCriteria` | string | Specific criteria for verification |
+| `verificationMethods` | array | One or more verification methods (see below) |
 | `priority` | enum (optional) | `Critical`, `High`, `Medium`, or `Low` |
 | `parentRequirementId` | string/null (optional) | Parent requirement ID for hierarchy |
 | `satisfiedBy` | string[] (optional) | Model elements that satisfy this requirement |
 | `tracesTo` | string[] (optional) | Related requirement IDs |
 
+**`verificationMethods[]`** array items:
+
+| Field | Type | Description |
+|---|---|---|
+| `verificationMethodId` | string | Scoped ID, pattern: `SYS-REQ-001-VM-01` |
+| `method` | enum | One of: `Analysis`, `Demonstration`, `Inspection`, `Test` |
+| `criteria` | string | Specific, measurable verification criteria |
+
 **Business-logic validations** (beyond schema):
 - No duplicate `requirementId` or `cameoUUID` values.
-- `verificationCriteria` must not be empty.
+- Each VM's `criteria` must not be empty.
+- Each `verificationMethodId` must start with its parent requirement ID + `-VM-`.
 - `parentRequirementId`, if specified, must reference a known requirement.
 
 ### ICD Export (`icd_export.json`)
