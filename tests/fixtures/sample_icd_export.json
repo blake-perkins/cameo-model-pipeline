@@ -1,0 +1,202 @@
+{
+  "exportMetadata": {
+    "exportTimestamp": "2026-03-10T14:30:00Z",
+    "cameoVersion": "2024x Refresh2",
+    "projectName": "SampleSystem"
+  },
+  "interfaces": [
+    {
+      "name": "SystemComms",
+      "description": "Primary system communication interface",
+      "messages": [
+        {
+          "name": "IcdRequest",
+          "description": "Request message sent to the system",
+          "fields": [
+            {
+              "name": "request_id",
+              "type": "string",
+              "fieldNumber": 1,
+              "description": "Unique identifier for this request"
+            },
+            {
+              "name": "timestamp",
+              "type": "int64",
+              "fieldNumber": 2,
+              "description": "Unix timestamp in milliseconds"
+            },
+            {
+              "name": "command_type",
+              "type": "CommandType",
+              "fieldNumber": 3,
+              "description": "Type of command being requested"
+            },
+            {
+              "name": "payload",
+              "type": "bytes",
+              "fieldNumber": 4,
+              "description": "Raw payload data"
+            },
+            {
+              "name": "priority",
+              "type": "MessagePriority",
+              "fieldNumber": 5,
+              "description": "Message priority level"
+            }
+          ]
+        },
+        {
+          "name": "IcdResponse",
+          "description": "Response message from the system",
+          "fields": [
+            {
+              "name": "request_id",
+              "type": "string",
+              "fieldNumber": 1,
+              "description": "ID of the original request"
+            },
+            {
+              "name": "timestamp",
+              "type": "int64",
+              "fieldNumber": 2,
+              "description": "Unix timestamp in milliseconds"
+            },
+            {
+              "name": "status",
+              "type": "ResponseStatus",
+              "fieldNumber": 3,
+              "description": "Status of the response"
+            },
+            {
+              "name": "error_message",
+              "type": "string",
+              "fieldNumber": 4,
+              "optional": true,
+              "description": "Error details if status is not OK"
+            },
+            {
+              "name": "payload",
+              "type": "bytes",
+              "fieldNumber": 5,
+              "description": "Response payload data"
+            }
+          ]
+        },
+        {
+          "name": "HealthStatus",
+          "description": "Periodic health status report",
+          "fields": [
+            {
+              "name": "component_name",
+              "type": "string",
+              "fieldNumber": 1
+            },
+            {
+              "name": "status",
+              "type": "HealthState",
+              "fieldNumber": 2
+            },
+            {
+              "name": "uptime_seconds",
+              "type": "uint64",
+              "fieldNumber": 3
+            },
+            {
+              "name": "metrics",
+              "type": "HealthMetric",
+              "fieldNumber": 4,
+              "repeated": true,
+              "description": "Key-value health metrics"
+            }
+          ]
+        },
+        {
+          "name": "HealthMetric",
+          "description": "A single health metric key-value pair",
+          "fields": [
+            {
+              "name": "key",
+              "type": "string",
+              "fieldNumber": 1
+            },
+            {
+              "name": "value",
+              "type": "double",
+              "fieldNumber": 2
+            },
+            {
+              "name": "unit",
+              "type": "string",
+              "fieldNumber": 3
+            }
+          ]
+        }
+      ],
+      "enums": [
+        {
+          "name": "CommandType",
+          "description": "Types of commands the system accepts",
+          "values": [
+            { "name": "COMMAND_TYPE_UNSPECIFIED", "number": 0 },
+            { "name": "COMMAND_TYPE_QUERY", "number": 1, "description": "Query system state" },
+            { "name": "COMMAND_TYPE_CONFIGURE", "number": 2, "description": "Update configuration" },
+            { "name": "COMMAND_TYPE_RESET", "number": 3, "description": "Reset subsystem" }
+          ]
+        },
+        {
+          "name": "ResponseStatus",
+          "description": "Status codes for ICD responses",
+          "values": [
+            { "name": "RESPONSE_STATUS_UNSPECIFIED", "number": 0 },
+            { "name": "RESPONSE_STATUS_OK", "number": 1 },
+            { "name": "RESPONSE_STATUS_ERROR", "number": 2 },
+            { "name": "RESPONSE_STATUS_INVALID_REQUEST", "number": 3 },
+            { "name": "RESPONSE_STATUS_TIMEOUT", "number": 4 }
+          ]
+        },
+        {
+          "name": "MessagePriority",
+          "description": "Priority levels for messages",
+          "values": [
+            { "name": "MESSAGE_PRIORITY_UNSPECIFIED", "number": 0 },
+            { "name": "MESSAGE_PRIORITY_LOW", "number": 1 },
+            { "name": "MESSAGE_PRIORITY_NORMAL", "number": 2 },
+            { "name": "MESSAGE_PRIORITY_HIGH", "number": 3 },
+            { "name": "MESSAGE_PRIORITY_CRITICAL", "number": 4 }
+          ]
+        },
+        {
+          "name": "HealthState",
+          "description": "Health states for system components",
+          "values": [
+            { "name": "HEALTH_STATE_UNSPECIFIED", "number": 0 },
+            { "name": "HEALTH_STATE_HEALTHY", "number": 1 },
+            { "name": "HEALTH_STATE_DEGRADED", "number": 2 },
+            { "name": "HEALTH_STATE_FAILED", "number": 3 }
+          ]
+        }
+      ],
+      "services": [
+        {
+          "name": "SystemService",
+          "description": "Primary system RPC service",
+          "methods": [
+            {
+              "name": "SendCommand",
+              "inputType": "IcdRequest",
+              "outputType": "IcdResponse",
+              "description": "Send a command and receive a response"
+            },
+            {
+              "name": "StreamHealth",
+              "inputType": "IcdRequest",
+              "outputType": "HealthStatus",
+              "serverStreaming": true,
+              "description": "Subscribe to health status updates"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

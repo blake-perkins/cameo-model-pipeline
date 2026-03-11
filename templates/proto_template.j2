@@ -1,0 +1,38 @@
+// Auto-generated from Cameo ICD export — DO NOT EDIT MANUALLY
+// Interface: {{ interface.name }}
+// Generated: {{ metadata.exportTimestamp }}
+// Model Version: {{ metadata.get('modelVersion', 'unknown') }}
+
+syntax = "proto3";
+
+package {{ package_name }};
+{% for enum in interface.get('enums', []) %}
+
+{% if enum.get('description') %}// {{ enum.description }}
+{% endif %}enum {{ enum.name }} {
+{% for val in enum['values'] %}
+{% if val.get('description') %}  // {{ val.description }}
+{% endif %}  {{ val.name }} = {{ val.number }};
+{% endfor %}
+}
+{% endfor %}
+{% for msg in interface.messages %}
+
+{% if msg.get('description') %}// {{ msg.description }}
+{% endif %}message {{ msg.name }} {
+{% for field in msg.fields %}
+{% if field.get('description') %}  // {{ field.description }}
+{% endif %}  {% if field.get('optional', False) %}optional {% endif %}{% if field.get('repeated', False) %}repeated {% endif %}{{ field.type }} {{ field.name }} = {{ field.fieldNumber }};
+{% endfor %}
+}
+{% endfor %}
+{% for svc in interface.get('services', []) %}
+
+{% if svc.get('description') %}// {{ svc.description }}
+{% endif %}service {{ svc.name }} {
+{% for method in svc.methods %}
+{% if method.get('description') %}  // {{ method.description }}
+{% endif %}  rpc {{ method.name }} ({% if method.get('clientStreaming') %}stream {% endif %}{{ method.inputType }}) returns ({% if method.get('serverStreaming') %}stream {% endif %}{{ method.outputType }});
+{% endfor %}
+}
+{% endfor %}

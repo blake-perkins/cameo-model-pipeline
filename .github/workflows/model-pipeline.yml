@@ -1,0 +1,126 @@
+name: Cameo Model Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-and-generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(cat VERSION | tr -d '[:space:]')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Model version: $VERSION"
+
+      - name: Validate exports exist
+        run: |
+          if [ ! -f exports/requirements_export.json ]; then
+            echo "::error::Export file not found: exports/requirements_export.json"
+            echo "Systems engineers must run the Cameo macros before committing."
+            echo "See cameo-macro/README.md for instructions."
+            exit 1
+          fi
+          if [ ! -f exports/icd_export.json ]; then
+            echo "::error::Export file not found: exports/icd_export.json"
+            echo "Systems engineers must run the Cameo macros before committing."
+            echo "See cameo-macro/README.md for instructions."
+            exit 1
+          fi
+
+      - name: Schema validation
+        run: |
+          python scripts/validate_exports.py \
+            --requirements exports/requirements_export.json \
+            --icd exports/icd_export.json \
+            --req-schema schemas/requirements_schema.json \
+            --icd-schema schemas/icd_schema.json \
+            --report-output build/reports/validation_report.json
+
+      - name: Generate proto files
+        run: |
+          python scripts/generate_protos.py \
+            --icd exports/icd_export.json \
+            --template-dir templates \
+            --output-dir build/proto
+
+      - name: Validate proto files
+        run: |
+          sudo apt-get install -y protobuf-compiler
+          for proto_file in build/proto/*.proto; do
+            protoc --proto_path=build/proto --descriptor_set_out=/dev/null "$proto_file"
+            echo "  VALID: $proto_file"
+          done
+
+      - name: Package artifact
+        run: |
+          python scripts/package_artifact.py \
+            --version-file VERSION \
+            --build-number ${{ github.run_number }} \
+            --proto-dir build/proto \
+            --requirements exports/requirements_export.json \
+            --requirements-schema schemas/requirements_schema.json \
+            --icd-export exports/icd_export.json \
+            --validation-report build/reports/validation_report.json \
+            --output-dir build \
+            --git-sha ${{ github.sha }} \
+            --git-branch ${{ github.ref_name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cameo-model-artifacts
+          path: build/*.zip
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-reports
+          path: build/reports/
+
+  tag-release:
+    needs: validate-and-generate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: echo "version=$(cat VERSION | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cameo-model-artifacts
+          path: build/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          files: build/*.zip
+          generate_release_notes: true

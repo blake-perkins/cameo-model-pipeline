@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CameoRequirementsExport",
+  "description": "Structured export of requirements and verification criteria from Cameo Systems Modeler",
+  "type": "object",
+  "required": ["exportMetadata", "requirements"],
+  "properties": {
+    "exportMetadata": {
+      "type": "object",
+      "required": ["exportTimestamp", "cameoVersion", "projectName", "modelVersion"],
+      "properties": {
+        "exportTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of when the export was generated"
+        },
+        "cameoVersion": {
+          "type": "string",
+          "description": "Cameo Systems Modeler version used for export"
+        },
+        "projectName": {
+          "type": "string",
+          "description": "Name of the Cameo project"
+        },
+        "modelVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version from VERSION file"
+        }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirementId",
+          "cameoUUID",
+          "title",
+          "description",
+          "verificationMethod",
+          "verificationCriteria"
+        ],
+        "properties": {
+          "requirementId": {
+            "type": "string",
+            "pattern": "^[A-Z]+-[A-Z]+-\\d{3,}$",
+            "description": "Human-readable requirement ID, e.g. SYS-REQ-001"
+          },
+          "cameoUUID": {
+            "type": "string",
+            "description": "Cameo internal UUID for traceability back to the model element"
+          },
+          "title": {
+            "type": "string",
+            "description": "Short title of the requirement"
+          },
+          "description": {
+            "type": "string",
+            "description": "Full requirement text"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["Critical", "High", "Medium", "Low"],
+            "description": "Requirement priority if defined in the model"
+          },
+          "status": {
+            "type": "string",
+            "description": "Lifecycle status of the requirement in the model"
+          },
+          "parentRequirementId": {
+            "type": ["string", "null"],
+            "description": "Human-readable ID of the parent requirement for hierarchy tracking"
+          },
+          "verificationMethod": {
+            "type": "string",
+            "enum": ["Analysis", "Demonstration", "Inspection", "Test"],
+            "description": "INCOSE verification method (ADIT)"
+          },
+          "verificationCriteria": {
+            "type": "string",
+            "description": "Text describing the specific criteria for verifying this requirement"
+          },
+          "satisfiedBy": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of model element names/IDs that satisfy this requirement"
+          },
+          "tracesTo": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of related requirement IDs this requirement traces to"
+          }
+        }
+      }
+    }
+  }
+}

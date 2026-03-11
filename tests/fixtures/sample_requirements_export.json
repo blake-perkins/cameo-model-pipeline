@@ -1,0 +1,88 @@
+{
+  "exportMetadata": {
+    "exportTimestamp": "2026-03-10T14:30:00Z",
+    "cameoVersion": "2024x Refresh2",
+    "projectName": "SampleSystem",
+    "modelVersion": "0.1.0"
+  },
+  "requirements": [
+    {
+      "requirementId": "SYS-REQ-001",
+      "cameoUUID": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "title": "Basic ICD Communications",
+      "description": "The system shall exchange messages with external systems per the Interface Control Document.",
+      "priority": "High",
+      "status": "Approved",
+      "parentRequirementId": null,
+      "verificationMethod": "Test",
+      "verificationCriteria": "Verify that a valid IcdRequest message produces a valid IcdResponse within 500ms under nominal load conditions.",
+      "satisfiedBy": ["ComponentA", "ComponentB"],
+      "tracesTo": []
+    },
+    {
+      "requirementId": "SYS-REQ-002",
+      "cameoUUID": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "title": "Health Monitoring",
+      "description": "The system shall report health status at a configurable interval not to exceed 5 seconds.",
+      "priority": "High",
+      "status": "Approved",
+      "parentRequirementId": null,
+      "verificationMethod": "Test",
+      "verificationCriteria": "Verify that health status messages are emitted at the configured interval with less than 10% jitter.",
+      "satisfiedBy": ["HealthMonitor"],
+      "tracesTo": []
+    },
+    {
+      "requirementId": "SYS-REQ-003",
+      "cameoUUID": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+      "title": "Graceful Degradation",
+      "description": "The system shall continue operating in a degraded mode when a non-critical subsystem fails.",
+      "priority": "Medium",
+      "status": "Approved",
+      "parentRequirementId": null,
+      "verificationMethod": "Demonstration",
+      "verificationCriteria": "Demonstrate that the system continues to process critical messages when the logging subsystem is unavailable.",
+      "satisfiedBy": ["FaultManager"],
+      "tracesTo": ["SYS-REQ-002"]
+    },
+    {
+      "requirementId": "SYS-REQ-004",
+      "cameoUUID": "d4e5f6a7-b8c9-0123-defa-234567890123",
+      "title": "Thermal Analysis Compliance",
+      "description": "The system shall operate within the thermal envelope defined in the environmental specification.",
+      "priority": "Critical",
+      "status": "Approved",
+      "parentRequirementId": null,
+      "verificationMethod": "Analysis",
+      "verificationCriteria": "Thermal analysis report confirms all components remain within operating temperature range under worst-case power dissipation.",
+      "satisfiedBy": ["Enclosure", "ThermalManagement"],
+      "tracesTo": []
+    },
+    {
+      "requirementId": "SYS-REQ-005",
+      "cameoUUID": "e5f6a7b8-c9d0-1234-efab-345678901234",
+      "title": "Error Message Handling",
+      "description": "The system shall reject malformed ICD messages and log a warning without interrupting normal operations.",
+      "priority": "High",
+      "status": "Approved",
+      "parentRequirementId": "SYS-REQ-001",
+      "verificationMethod": "Test",
+      "verificationCriteria": "Verify that sending 100 malformed messages results in 100 rejection log entries and zero system errors or restarts.",
+      "satisfiedBy": ["MessageValidator"],
+      "tracesTo": ["SYS-REQ-001"]
+    },
+    {
+      "requirementId": "SYS-REQ-006",
+      "cameoUUID": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+      "title": "Visual Inspection of Connectors",
+      "description": "All external connectors shall be properly labeled and secured per the mechanical drawing.",
+      "priority": "Medium",
+      "status": "Approved",
+      "parentRequirementId": null,
+      "verificationMethod": "Inspection",
+      "verificationCriteria": "Inspect all external connectors for proper labeling per drawing MD-2024-001 and torque verification per specification.",
+      "satisfiedBy": ["MechanicalAssembly"],
+      "tracesTo": []
+    }
+  ]
+}

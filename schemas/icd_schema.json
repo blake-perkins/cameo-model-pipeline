@@ -1,0 +1,154 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CameoICDExport",
+  "description": "Structured export of ICD definitions from Cameo Systems Modeler for protobuf generation",
+  "type": "object",
+  "required": ["exportMetadata", "interfaces"],
+  "properties": {
+    "exportMetadata": {
+      "type": "object",
+      "required": ["exportTimestamp", "cameoVersion", "projectName"],
+      "properties": {
+        "exportTimestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cameoVersion": {
+          "type": "string"
+        },
+        "projectName": {
+          "type": "string"
+        }
+      }
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "messages"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Interface name, becomes the .proto package/file name"
+          },
+          "description": {
+            "type": "string"
+          },
+          "protoPackage": {
+            "type": "string",
+            "description": "Optional override for the proto package name"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "fields"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "type", "fieldNumber"],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "Protobuf type: int32, string, bool, float, enum name, message name, etc."
+                      },
+                      "fieldNumber": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "repeated": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "optional": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "enums": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "values"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "number"],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "number": {
+                        "type": "integer"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "methods"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "methods": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "inputType", "outputType"],
+                    "properties": {
+                      "name": { "type": "string" },
+                      "inputType": { "type": "string" },
+                      "outputType": { "type": "string" },
+                      "clientStreaming": { "type": "boolean", "default": false },
+                      "serverStreaming": { "type": "boolean", "default": false },
+                      "description": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
