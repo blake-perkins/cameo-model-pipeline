@@ -2,9 +2,9 @@ name: Cameo Model Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
   validate-and-generate:
@@ -59,7 +59,7 @@ jobs:
 
       - name: Validate proto files
         run: |
-          sudo apt-get install -y protobuf-compiler
+          sudo apt-get install -y -qq protobuf-compiler
           for proto_file in build/proto/*.proto; do
             protoc --proto_path=build/proto --descriptor_set_out=/dev/null "$proto_file"
             echo "  VALID: $proto_file"
@@ -94,7 +94,7 @@ jobs:
 
   tag-release:
     needs: validate-and-generate
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -105,7 +105,17 @@ jobs:
         id: version
         run: echo "version=$(cat VERSION | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
 
+      - name: Check if tag exists
+        id: tag_check
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create Git tag
+        if: steps.tag_check.outputs.exists == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -113,12 +123,14 @@ jobs:
           git push origin "v${{ steps.version.outputs.version }}"
 
       - name: Download artifact
+        if: steps.tag_check.outputs.exists == 'false'
         uses: actions/download-artifact@v4
         with:
           name: cameo-model-artifacts
           path: build/
 
       - name: Create GitHub Release
+        if: steps.tag_check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
