@@ -3,7 +3,7 @@
     "exportTimestamp": "2026-03-10T14:30:00Z",
     "cameoVersion": "2024x Refresh2",
     "projectName": "SampleSystem",
-    "modelVersion": "0.2.0"
+    "modelVersion": "0.3.0"
   },
   "requirements": [
     {
@@ -14,14 +14,14 @@
       "priority": "High",
       "status": "Approved",
       "parentRequirementId": null,
-      "verificationMethods": [
+      "verificationCriteria": [
         {
-          "verificationMethodId": "SYS-REQ-001-VM-01",
+          "verificationCriteriaId": "SYS-REQ-001-VC-01",
           "method": "Test",
           "criteria": "Verify that a valid IcdRequest message produces a valid IcdResponse within 500ms under nominal load conditions."
         },
         {
-          "verificationMethodId": "SYS-REQ-001-VM-02",
+          "verificationCriteriaId": "SYS-REQ-001-VC-02",
           "method": "Demonstration",
           "criteria": "Demonstrate correct round-trip ICD message exchange with the simulator under nominal conditions."
         }
@@ -37,9 +37,9 @@
       "priority": "High",
       "status": "Approved",
       "parentRequirementId": null,
-      "verificationMethods": [
+      "verificationCriteria": [
         {
-          "verificationMethodId": "SYS-REQ-002-VM-01",
+          "verificationCriteriaId": "SYS-REQ-002-VC-01",
           "method": "Test",
           "criteria": "Verify that health status messages are emitted at the configured interval with less than 10% jitter."
         }
@@ -55,14 +55,14 @@
       "priority": "Medium",
       "status": "Approved",
       "parentRequirementId": null,
-      "verificationMethods": [
+      "verificationCriteria": [
         {
-          "verificationMethodId": "SYS-REQ-003-VM-01",
+          "verificationCriteriaId": "SYS-REQ-003-VC-01",
           "method": "Demonstration",
           "criteria": "Demonstrate that the system continues to process critical messages when the logging subsystem is unavailable."
         },
         {
-          "verificationMethodId": "SYS-REQ-003-VM-02",
+          "verificationCriteriaId": "SYS-REQ-003-VC-02",
           "method": "Test",
           "criteria": "Verify via log analysis that critical messages continue to be processed when the logging subsystem is disabled."
         }
@@ -78,9 +78,9 @@
       "priority": "Critical",
       "status": "Approved",
       "parentRequirementId": null,
-      "verificationMethods": [
+      "verificationCriteria": [
         {
-          "verificationMethodId": "SYS-REQ-004-VM-01",
+          "verificationCriteriaId": "SYS-REQ-004-VC-01",
           "method": "Analysis",
           "criteria": "Thermal analysis report confirms all components remain within operating temperature range under worst-case power dissipation."
         }
@@ -96,9 +96,9 @@
       "priority": "High",
       "status": "Approved",
       "parentRequirementId": "SYS-REQ-001",
-      "verificationMethods": [
+      "verificationCriteria": [
         {
-          "verificationMethodId": "SYS-REQ-005-VM-01",
+          "verificationCriteriaId": "SYS-REQ-005-VC-01",
           "method": "Test",
           "criteria": "Verify that sending 100 malformed messages results in 100 rejection log entries and zero system errors or restarts."
         }
@@ -114,9 +114,9 @@
       "priority": "Medium",
       "status": "Approved",
       "parentRequirementId": null,
-      "verificationMethods": [
+      "verificationCriteria": [
         {
-          "verificationMethodId": "SYS-REQ-006-VM-01",
+          "verificationCriteriaId": "SYS-REQ-006-VC-01",
           "method": "Inspection",
           "criteria": "Inspect all external connectors for proper labeling per drawing MD-2024-001 and torque verification per specification."
         }

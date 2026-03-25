@@ -48,7 +48,7 @@ def validate_requirements_content(data_path: str) -> list[str]:
     errors = []
     seen_ids = set()
     seen_uuids = set()
-    seen_vm_ids = set()
+    seen_vc_ids = set()
 
     for i, req in enumerate(data.get("requirements", [])):
         req_id = req.get("requirementId", f"(index {i})")
@@ -65,26 +65,26 @@ def validate_requirements_content(data_path: str) -> list[str]:
         if uuid:
             seen_uuids.add(uuid)
 
-        # Check verificationMethods array
-        vm_list = req.get("verificationMethods", [])
-        for vm in vm_list:
-            vm_id = vm.get("verificationMethodId", "")
-            vm_criteria = vm.get("criteria", "").strip()
-            if not vm_criteria:
+        # Check verificationCriteria array
+        vc_list = req.get("verificationCriteria", [])
+        for vc in vc_list:
+            vc_id = vc.get("verificationCriteriaId", "")
+            vc_criteria = vc.get("criteria", "").strip()
+            if not vc_criteria:
                 errors.append(
-                    f"  [requirements] {req_id}: verificationMethod {vm_id} has empty criteria"
+                    f"  [requirements] {req_id}: verificationCriteria entry {vc_id} has empty criteria"
                 )
-            expected_prefix = req_id + "-VM-"
-            if not vm_id.startswith(expected_prefix):
+            expected_prefix = req_id + "-VC-"
+            if not vc_id.startswith(expected_prefix):
                 errors.append(
-                    f"  [requirements] {req_id}: verificationMethodId '{vm_id}' "
+                    f"  [requirements] {req_id}: verificationCriteriaId '{vc_id}' "
                     f"does not start with '{expected_prefix}'"
                 )
-            if vm_id in seen_vm_ids:
+            if vc_id in seen_vc_ids:
                 errors.append(
-                    f"  [requirements] Duplicate verificationMethodId: {vm_id}"
+                    f"  [requirements] Duplicate verificationCriteriaId: {vc_id}"
                 )
-            seen_vm_ids.add(vm_id)
+            seen_vc_ids.add(vc_id)
 
         # Check parent reference exists if specified
         parent = req.get("parentRequirementId")

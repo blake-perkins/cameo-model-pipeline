@@ -77,7 +77,7 @@ def getRequirementId(Element element) {
     return id
 }
 
-def getVerificationMethods(Element element, String reqId) {
+def getVerificationCriteria(Element element, String reqId) {
     // INCOSE ADIT: Analysis, Demonstration, Inspection, Test
     // Reads the existing tagged values and wraps them in the array format.
     def method = getTaggedValue(element, "Requirement", "VerificationMethod")
@@ -92,12 +92,12 @@ def getVerificationMethods(Element element, String reqId) {
     }
     criteria = criteria ?: ""
 
-    def vms = [[
-        verificationMethodId: "${reqId}-VM-${String.format('%02d', 1)}",
-        method              : method,
-        criteria            : criteria,
+    def vcs = [[
+        verificationCriteriaId: "${reqId}-VC-${String.format('%02d', 1)}",
+        method                : method,
+        criteria              : criteria,
     ]]
-    return vms
+    return vcs
 }
 
 def getPriority(Element element) {
@@ -158,7 +158,7 @@ def collectRequirements(Element rootElement, List results) {
             priority           : getPriority(rootElement),
             status             : getTaggedValue(rootElement, "Requirement", "Status") ?: "Draft",
             parentRequirementId: getParentRequirementId(rootElement),
-            verificationMethods: getVerificationMethods(rootElement, getRequirementId(rootElement)),
+            verificationCriteria: getVerificationCriteria(rootElement, getRequirementId(rootElement)),
             satisfiedBy        : getSatisfiedBy(rootElement),
             tracesTo           : getTracesTo(rootElement),
         ]
